@@ -3,10 +3,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const registerRoutes = require('./routes');
+
 //Configuración
 const config = require('./config');
+
 //Inicialización de la aplicación
 const app = express();
+
 //Configuración de la API
 require('events').EventEmitter.defaultMaxListeners = Infinity;
 
@@ -30,16 +33,31 @@ app.use(function (req, res, next) {
   next();
 });
 
-//Ruta de bienvenida
+/**
+ * Ruta de bienvenida
+ * @param Ruta,
+ * @param function
+ * @returns { json }
+ */
 app.get('/', function(req, res) {
   res.send({
-    'message': 'Bienvenido a la API REST de datos estadísticos informáticos'
+    'message': 'Bienvenido a la API de datos estadísticos laborales tecnológicos'
   });
 });
 
+/**
+ * Registro de ruta inicial
+ * @param app,
+ * @returns { void }
+ */
 registerRoutes(app);
 
-// Inicialización del servicio
+/**
+ * Inicialización del servicio
+ * @param puerto,
+ * @param function
+ * @returns { void }
+ */
 app.listen(config.puerto, function() {
   console.log(`Node server ejecutandose en http://${config.dominio}:${config.puerto}`);
 });
