@@ -1,6 +1,4 @@
 const graphql = require('./graphql');
-const cache = require('../util/cache-middleware');
-const config = require('../config');
 
 /**
  * Registro de rutas
@@ -9,7 +7,7 @@ const config = require('../config');
  * @returns {void}
  */
 const register = function(app) {
-  app.use('/graphql', cache(config.cache), graphql);
+  app.use('/graphql', graphql);
 };
 
 module.exports = register;
