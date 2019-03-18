@@ -84,7 +84,7 @@ const root = {
     data.forEach((entry) => rawSkills.push(...entry.skill));
     const skills = [...new Set(rawSkills)];
     var iib = [];
-    
+
 
     skills.map((value) => {
 
@@ -99,7 +99,7 @@ const root = {
         // Si la entrada en el origen de datos contiene la skill
         if (entry.skill.findIndex(s => s === value) !== -1) {
 
-           dato = datoSkill[fecha];
+          dato = datoSkill[fecha];
           // Si el mes existe en datos, agrega 1, si no lo crea con valor 1
           if (dato) {
             datoSkill[fecha] = dato + 1;
@@ -116,11 +116,7 @@ const root = {
         });
       }
 
-      dattta.sort(function (a, b) {
-        if (a.fecha < b.fecha) return 1;
-        if (a.fecha > b.fecha) return -1;
-        return 0;
-      });
+      dattta.sort((a, b) => a.fecha < b.fecha ? 1 : -1);
 
       iib.push({
         skill: value,
@@ -128,7 +124,8 @@ const root = {
       })
     })
 
-    return iib;
+    return iib.sort((x, y) => x.skill > y.skill ? 1 : -1);
+    
   }
 };
 
