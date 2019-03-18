@@ -84,19 +84,22 @@ const root = {
     data.forEach((entry) => rawSkills.push(...entry.skill));
     const skills = [...new Set(rawSkills)];
     var iib = [];
-    const datoSkill = {};
+    
 
     skills.map((value) => {
+
+      const datoSkill = {};
 
       var dattta = [];
 
       data.forEach((entry) => {
+        let dato = 0;
         // Fecha de evaluacion del ciclo
         const fecha = `${entry.fecha.split('-')[0]}-${entry.fecha.split('-')[1]}`;
         // Si la entrada en el origen de datos contiene la skill
         if (entry.skill.findIndex(s => s === value) !== -1) {
 
-          const dato = datoSkill[fecha];
+           dato = datoSkill[fecha];
           // Si el mes existe en datos, agrega 1, si no lo crea con valor 1
           if (dato) {
             datoSkill[fecha] = dato + 1;
