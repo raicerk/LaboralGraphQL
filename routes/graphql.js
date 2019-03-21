@@ -46,6 +46,8 @@ const schema = buildSchema(`
     link: String
     "Clasificacion de la oferta"
     clasificacion: String
+    "Sueldo ofrecido en la oferta"
+    sueldo: String
     "Skill requeridos en la oferta"
     skill: [String]
   }
