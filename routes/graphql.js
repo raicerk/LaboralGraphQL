@@ -48,6 +48,14 @@ const schema = buildSchema(`
     clasificacion: String
     "Sueldo ofrecido en la oferta"
     sueldo: String
+    "Sueldo Minimo ofrecido en la oferta"
+    sueldominimo: Number
+    "Sueldo Maximo ofrecido en la oferta"
+    sueldomaximo: Number
+    "Tipo de moneda del sueldo ofrecido en la oferta"
+    sueldomoneda: String
+    "Modalidad de tiempo de empleo ofrecido en la oferta"
+    sueldotipotiempo: String
     "Skill requeridos en la oferta"
     skill: [String]
   }
