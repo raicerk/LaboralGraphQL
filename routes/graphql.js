@@ -49,9 +49,9 @@ const schema = buildSchema(`
     "Sueldo ofrecido en la oferta"
     sueldo: String
     "Sueldo Minimo ofrecido en la oferta"
-    sueldominimo: Number
+    sueldominimo: Int
     "Sueldo Maximo ofrecido en la oferta"
-    sueldomaximo: Number
+    sueldomaximo: Int
     "Tipo de moneda del sueldo ofrecido en la oferta"
     sueldomoneda: String
     "Modalidad de tiempo de empleo ofrecido en la oferta"
