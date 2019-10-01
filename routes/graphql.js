@@ -74,21 +74,16 @@ const schema = buildSchema(`
  */
 const root = {
   Laboral: async ({ where, order }) => {
-    const snapshot = await db.collection("laboral").where(where.field, "==", where.value).orderBy(order.by, order.orientation).get()
-    const { docs } = snapshot;
-    const data = docs.map(doc => doc.data())
-    return data;
+    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value }).sort({ [order.by]: order.orientation == "desc" ? 1 : -1 }).toArray()
+    return snapshot;
   },
   Laborales: async () => {
-    const snapshot = await db.collection("laboral").get()
-    const { docs } = snapshot;
-    const data = docs.map(doc => doc.data())
-    return data;
+    const snapshot = await connMongo.collection("laboral").find().toArray()
+    return snapshot;
   },
   LaboralAgrupadoPorMes: async ({ where }) => {
-    const snapshot = await db.collection("laboral").where(where.field, "==", where.value).get()
-    const { docs } = snapshot;
-    const data = docs.map(doc => doc.data())
+    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value }).toArray()
+    const data = snapshot;
 
     const rawSkills = [];
     data.forEach((entry) => rawSkills.push(...entry.skill));
@@ -135,7 +130,7 @@ const root = {
     })
 
     return iib.sort((x, y) => x.skill > y.skill ? 1 : -1);
-    
+
   }
 };
 

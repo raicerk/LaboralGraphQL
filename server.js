@@ -2,6 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mongo = require('./controllers/mongo');
 const registerRoutes = require('./routes');
 
 //Configuración
@@ -58,6 +59,7 @@ registerRoutes(app);
  * @param function
  * @returns { void }
  */
-app.listen(config.puerto, function() {
+app.listen(config.puerto, async () => {
+  connMongo = await mongo.ConnectDB()
   console.log(`Node server ejecutandose en http://${config.dominio}:${config.puerto}`);
 });
