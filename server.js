@@ -27,7 +27,7 @@ app.set('port', config.puerto);
 
 //Configuración de la cabecera
 app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', `http://${config.dominio}`);
+  res.setHeader('Access-Control-Allow-Origin', `*`);
   res.setHeader('Access-Control-Allow-Methods', 'GET');
   res.setHeader('Content-Type', 'application/json');
   next();
