@@ -16,6 +16,8 @@ const schema = buildSchema(`
     Laborales: [Laboral]
     """Datos agrupados por fecha"""
     LaboralAgrupadoPorMes(where: FieldBy): [Agrupacion]
+    """Datos agrupados por fecha"""
+    LaboralAcumulado(where: FieldBy): [Cantidad]
   }
 
   input OrderBy {
@@ -25,7 +27,8 @@ const schema = buildSchema(`
 
   input FieldBy{
     field: String,
-    value: String
+    value: String,
+    in: String
   }
 
   """Datos de ofertas laborales por año mes y cantidad"""
@@ -66,6 +69,14 @@ const schema = buildSchema(`
     skill: String
     """Datos agrupados del skill"""
     datos: [Datos]
+  }
+
+  """Campos disponibles para mostrar datos agrupados"""
+  type Cantidad{
+    """Nombre del skill"""
+    skill: String
+    """Cantidad de skill agrupados"""
+    cantidad: Int
   }
 `);
 
@@ -126,6 +137,35 @@ const root = {
       iib.push({
         skill: value,
         datos: dattta
+      })
+    })
+
+    return iib.sort((x, y) => x.skill > y.skill ? 1 : -1);
+
+  },
+  LaboralAcumulado: async ({ where }) => {
+    //{$in: where.in.split(",")}
+    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value }).toArray()
+    const data = snapshot;
+
+    const rawSkills = [];
+    data.forEach((entry) => rawSkills.push(...entry.skill));
+    const skills = [...new Set(rawSkills)];
+    var iib = [];
+
+    skills.map((value) => {
+
+      var datta = 0;
+
+      data.forEach((entry) => {
+        if (entry.skill.findIndex(s => s === value) !== -1) {
+          datta++
+        }
+      });
+
+      iib.push({
+        skill: value,
+        cantidad: datta
       })
     })
 
