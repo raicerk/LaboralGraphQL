@@ -18,6 +18,8 @@ const schema = buildSchema(`
     LaboralAgrupadoPorMes(where: FieldBy): [Agrupacion]
     """Datos agrupados por fecha"""
     LaboralAcumulado(where: FieldBy): [Cantidad]
+    """Datos de salarios con filtros"""
+    LaboralSalarios(where: FieldBy): [Salario]
   }
 
   input OrderBy {
@@ -76,6 +78,19 @@ const schema = buildSchema(`
     """Nombre del skill"""
     skill: String
     """Cantidad de skill agrupados"""
+    cantidad: Int
+  }
+
+  type Salario{
+    """Nombre del skill"""
+    skill: String
+    """Promedio de salario minimo ofrecido en la oferta"""
+    salariominimo: Int 
+    """Promedio de salario maximo ofrecido en la oferta"""
+    salariomaximo: Int 
+    """Media de salario ofrecido en la oferta"""
+    media: Int
+    """Cantidad de ofertas que incluyen el skill indicadado"""
     cantidad: Int
   }
 `);
@@ -171,6 +186,65 @@ const root = {
 
     return iib.sort((x, y) => x.skill > y.skill ? 1 : -1);
 
+  },
+  LaboralSalarios: async ({ where }) => {
+    const snapshot = await connMongo.collection("laboral").aggregate([
+      {
+        '$unwind': {
+          'path': '$skill'
+        }
+      }, {
+        '$match': {
+          [where.field]: where.value, 
+          'sueldominimo': {
+            '$ne': null
+          }
+        }
+      }, {
+        '$group': {
+          '_id': '$skill', 
+          'averageMin': {
+            '$avg': '$sueldominimo'
+          }, 
+          'averageMax': {
+            '$avg': '$sueldomaximo'
+          }, 
+          'count': {
+            '$sum': 1
+          }
+        }
+      }, {
+        '$addFields': {
+          'suma': {
+            '$sum': [
+              '$averageMax', '$averageMin'
+            ]
+          }
+        }
+      }, {
+        '$addFields': {
+          'media': {
+            '$divide': [
+              '$suma', 2
+            ]
+          }
+        }
+      }, {
+        '$project': {
+          'suma': 0
+        }
+      }
+    ]).toArray()
+
+    return snapshot.map(iter=>{
+      return {
+        skill: iter._id,
+        salariominimo: Math.round(iter.averageMin),
+        salariomaximo: Math.round(iter.averageMax),
+        media: Math.round(iter.media),
+        cantidad: iter.count
+      }
+    });
   }
 };
 
