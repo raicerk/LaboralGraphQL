@@ -20,6 +20,8 @@ const schema = buildSchema(`
     LaboralAcumulado(where: FieldBy): [Cantidad]
     """Datos de salarios con filtros"""
     LaboralSalarios(where: FieldBy): [Salario]
+    """Datos de skill que son solicitados al seleccionar un skill"""
+    LaboralConOtrosSkill(country: Country, skill: Skill): [Cantidad]
   }
 
   input OrderBy {
@@ -31,6 +33,14 @@ const schema = buildSchema(`
     field: String,
     value: String,
     in: String
+  }
+
+  input Country{
+    value: String
+  }
+
+  input Skill{
+    value: String
   }
 
   """Datos de ofertas laborales por año mes y cantidad"""
@@ -195,20 +205,20 @@ const root = {
         }
       }, {
         '$match': {
-          [where.field]: where.value, 
+          [where.field]: where.value,
           'sueldominimo': {
             '$ne': null
           }
         }
       }, {
         '$group': {
-          '_id': '$skill', 
+          '_id': '$skill',
           'averageMin': {
             '$avg': '$sueldominimo'
-          }, 
+          },
           'averageMax': {
             '$avg': '$sueldomaximo'
-          }, 
+          },
           'count': {
             '$sum': 1
           }
@@ -236,7 +246,7 @@ const root = {
       }
     ]).toArray()
 
-    return snapshot.map(iter=>{
+    return snapshot.map(iter => {
       return {
         skill: iter._id,
         salariominimo: Math.round(iter.averageMin),
@@ -245,6 +255,37 @@ const root = {
         cantidad: iter.count
       }
     });
+  },
+  LaboralConOtrosSkill: async ({ country, skill }) => {
+    const snapshot = await connMongo.collection("laboral").aggregate([
+      {
+        '$match': {
+          skill: skill.value,
+          pais: country.value
+        }
+      }, {
+        '$unwind': {
+          'path': '$skill'
+        }
+      }, {
+        '$group': {
+          '_id': '$skill',
+          'count': {
+            '$sum': 1
+          }
+        }
+      }, {
+        '$sort': {
+          'count': -1
+        }
+      }
+    ]).toArray()
+    return snapshot.map(iter=>{
+      return {
+        skill: iter._id,
+        cantidad: iter.count
+      }
+    })
   }
 };
 
