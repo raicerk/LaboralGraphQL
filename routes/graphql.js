@@ -110,15 +110,15 @@ const schema = buildSchema(`
  */
 const root = {
   Laboral: async ({ where, order }) => {
-    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value }).sort({ [order.by]: order.orientation == "desc" ? 1 : -1 }).toArray()
+    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value, fecha: { $gt: "2018-12-01T00:00:00" } }).sort({ [order.by]: order.orientation == "desc" ? 1 : -1 }).toArray()
     return snapshot;
   },
   Laborales: async () => {
-    const snapshot = await connMongo.collection("laboral").find().toArray()
+    const snapshot = await connMongo.collection("laboral").find({fecha: { $gt: "2018-12-01T00:00:00" }}).toArray()
     return snapshot;
   },
   LaboralAgrupadoPorMes: async ({ where }) => {
-    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value }).toArray()
+    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value, fecha: { $gt: "2018-12-01T00:00:00" } }).toArray()
     const data = snapshot;
 
     const rawSkills = [];
@@ -170,7 +170,7 @@ const root = {
   },
   LaboralAcumulado: async ({ where }) => {
     //{$in: where.in.split(",")}
-    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value }).toArray()
+    const snapshot = await connMongo.collection("laboral").find({ [where.field]: where.value , fecha: { $gt: "2018-12-01T00:00:00" }}).toArray()
     const data = snapshot;
 
     const rawSkills = [];
@@ -206,6 +206,7 @@ const root = {
       }, {
         '$match': {
           [where.field]: where.value,
+          fecha: { $gt: "2018-12-01T00:00:00" },
           'sueldominimo': {
             '$ne': null
           }
@@ -261,7 +262,8 @@ const root = {
       {
         '$match': {
           skill: skill.value,
-          pais: country.value
+          pais: country.value,
+          fecha: { $gt: "2018-12-01T00:00:00" }
         }
       }, {
         '$unwind': {
@@ -280,7 +282,7 @@ const root = {
         }
       }
     ]).toArray()
-    return snapshot.map(iter=>{
+    return snapshot.map(iter => {
       return {
         skill: iter._id,
         cantidad: iter.count
